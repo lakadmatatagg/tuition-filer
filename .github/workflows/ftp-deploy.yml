@@ -32,17 +32,8 @@ jobs:
           password: ${{ secrets.CPANEL_FTP_PASS }}
           local-dir: ./  # root of your project
           server-dir: /  # adjust this to your cPanel app root
-          exclude: | # exclude these files, if there is any additional files in root folder, add here too
-            **/.git*
-            **/.github/**
-            **/environments/**
-            **/src/**
-            **/templates/**
-            **/test/**
-            **/*.gitignore
-            **/*.prettierrc
-            **/*.README.md
-            **/*.eslint.config.mjs
-            **/nest-cli.json
-            **/tsconfig.build.json
-            **/tsconfig.json
+          include: |
+            dist/**
+            environment/**
+            package.json
+            package-lock.json
