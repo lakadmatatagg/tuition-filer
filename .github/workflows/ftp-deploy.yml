@@ -32,6 +32,7 @@ jobs:
           password: ${{ secrets.CPANEL_FTP_PASS }}
           local-dir: ./  # root of your project
           server-dir: /  # adjust this to your cPanel app root
+          clean: true  # Will delete all files on the server before uploading
           include: |
             dist/**
             environments/**
