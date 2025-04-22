@@ -36,6 +36,7 @@ jobs:
           exclude: |
             **/.git*
             **/.github/**
+            **/node_modules/**
             **/environments/**
             **/src/**
             **/templates/**
