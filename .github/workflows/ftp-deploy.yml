@@ -34,6 +34,6 @@ jobs:
           server-dir: /  # adjust this to your cPanel app root
           include: |
             dist/**
-            environment/**
+            environments/**
             package.json
             package-lock.json
