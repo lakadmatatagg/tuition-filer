@@ -37,14 +37,13 @@ jobs:
             **/.git*
             **/.git*/**
             **/node_modules/**
-            **/environments/**
             **/src/**
             **/templates/**
             **/test/**
             **/*.gitignore
             **/*.prettierrc
-            **/*.README.md
-            **/*.eslint.config.mjs
+            eslint.config.mjs
             **/nest-cli.json
             **/tsconfig.build.json
             **/tsconfig.json
+            README.md
