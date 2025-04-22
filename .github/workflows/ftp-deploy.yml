@@ -47,3 +47,4 @@ jobs:
             **/tsconfig.build.json
             **/tsconfig.json
             README.md
+            package-lock.json
