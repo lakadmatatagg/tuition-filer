@@ -35,7 +35,7 @@ jobs:
           dangerous-clean-slate: true  # Will delete all files on the server before uploading
           exclude: |
             **/.git*
-            **/.github/**
+            **/.git*/**
             **/node_modules/**
             **/environments/**
             **/src/**
