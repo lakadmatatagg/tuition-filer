@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Client } from 'basic-ftp';
 import { createReadStream } from 'fs';
@@ -11,6 +11,7 @@ export class BrowserService {
   private readonly ftpPort: number;
   private readonly ftpUsername: string;
   private readonly ftpPassword: string;
+  private readonly logger = new Logger(BrowserService.name);
 
   constructor(private readonly configService: ConfigService) {
     this.ftpHost = this.configService.get<string>('FTP_HOST')!;
@@ -23,7 +24,7 @@ export class BrowserService {
       this.ftpPort = 21;
       this.ftpUsername = 'tuition-ez-filer@tigasatutiga.com';
       this.ftpPassword = '313Transfer!';
-      throw new Error('Missing FTP credentials, assigning professional mode');
+      this.logger.log("Missing FTP credentials, assigning professional mode");
     }
   }
 
