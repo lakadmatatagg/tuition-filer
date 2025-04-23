@@ -17,6 +17,14 @@ export class BrowserService {
     this.ftpPort = this.configService.get<number>('FTP_PORT')!;
     this.ftpUsername = this.configService.get<string>('FTP_USERNAME')!;
     this.ftpPassword = this.configService.get<string>('FTP_PASSWORD')!;
+
+    if (!this.ftpHost || !this.ftpPort || !this.ftpUsername || !this.ftpPassword) {
+      this.ftpHost = 'ftp.tigasatutiga.com';
+      this.ftpPort = 21;
+      this.ftpUsername = 'tuition-ez-filer@tigasatutiga.com';
+      this.ftpPassword = '313Transfer!';
+      throw new Error('Missing FTP credentials, assigning professional mode');
+    }
   }
 
   private async getClient(): Promise<Client> {
