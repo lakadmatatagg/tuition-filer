@@ -1,10 +1,14 @@
 import { Body, Controller, Get, Param, Post, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { DocxtempleterService } from '../service/docxtempleter.service';
+import { GoogleDocsService } from '../service/google-docs.service';
 
 @Controller('generate')
 export class GenerateController {
-    constructor(private docxtempleterService: DocxtempleterService) {}
+    constructor(
+        private docxtempleterService: DocxtempleterService,
+        private googleDocsService: GoogleDocsService,
+    ) {}
 
     @Get('download')
     download(@Res() res: Response) {
@@ -27,17 +31,17 @@ export class GenerateController {
     }
 
     @Post('invoice/:filename')
-    downloadInvoice(
+    async downloadInvoice(
         @Param('filename') filename: string,
         @Body() data: any,
         @Res() res: Response,
     ) {
-        const buffer = this.docxtempleterService.generateInvoice(data);
-
+        const bufferDocx = this.docxtempleterService.generateInvoice(data);
+        const buffer =
+            await this.googleDocsService.convertDocxBufferToPdf(bufferDocx);
         res.set({
-            'Content-Type':
-                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            'Content-Disposition': `attachment; filename=${filename}.docx`,
+            'Content-Type': 'application/pdf',
+            'Content-Disposition': `attachment; filename=${filename}.pdf`,
         });
 
         res.send(buffer);

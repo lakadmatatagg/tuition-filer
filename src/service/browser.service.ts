@@ -1,8 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Client } from 'basic-ftp';
-import { createReadStream } from 'fs';
-import { join } from 'path';
 import { Writable } from 'stream';
 
 @Injectable()
@@ -50,7 +48,11 @@ export class BrowserService {
     async showContents(): Promise<any> {
         const client = await this.getClient();
         try {
-            return await client.list('/');
+            const list = await client.list('/');
+            return list.filter((item) => item.name !== '.ftpquota');
+        } catch (e) {
+            this.logger.log('Error listing contents: ');
+            this.logger.error(e);
         } finally {
             client.close();
         }

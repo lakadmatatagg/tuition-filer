@@ -7,7 +7,7 @@ async function bootstrap() {
     const isDev = process.env.NODE_ENV == 'dev';
 
     const corsOrigins = isDev
-        ? ['http://localhost:4200']
+        ? ['http://localhost:4200', 'http://localhost:8080']
         : [
               'https://auth.tigasatutiga.com',
               'https://tuitionez-admin-api.tigasatutiga.com',

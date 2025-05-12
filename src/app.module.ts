@@ -6,6 +6,9 @@ import { BrowserController } from './controller/browser.controller';
 import { BrowserService } from './service/browser.service';
 import { GenerateController } from './controller/generate.controller';
 import { DocxtempleterService } from './service/docxtempleter.service';
+import { GoogleDocsService } from './service/google-docs.service';
+import { TelegramService } from './service/telegram.service';
+import { SpringbootService } from './service/springboot.service';
 
 const envImport = ConfigModule.forRoot({
     envFilePath: [
@@ -18,6 +21,13 @@ const envImport = ConfigModule.forRoot({
 @Module({
     imports: [envImport],
     controllers: [AppController, BrowserController, GenerateController],
-    providers: [AppService, BrowserService, DocxtempleterService],
+    providers: [
+        AppService,
+        BrowserService,
+        DocxtempleterService,
+        GoogleDocsService,
+        TelegramService,
+        SpringbootService,
+    ],
 })
 export class AppModule {}
