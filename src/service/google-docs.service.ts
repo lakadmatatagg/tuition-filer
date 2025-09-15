@@ -13,7 +13,7 @@ export class GoogleDocsService {
         this.auth = new GoogleAuth({
             keyFile: path.resolve(
                 __dirname,
-                '../../auth/tuitionez-cloud-service-account.json',
+                '../../auth/tigasatutiga-439419-8f706d892fc7.json',
             ),
             scopes: ['https://www.googleapis.com/auth/drive'],
         });

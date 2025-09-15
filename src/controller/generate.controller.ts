@@ -36,7 +36,8 @@ export class GenerateController {
         @Body() data: any,
         @Res() res: Response,
     ) {
-        const bufferDocx = this.docxtempleterService.generateInvoice(data);
+        const bufferDocx =
+            await this.docxtempleterService.generateInvoice(data);
         const buffer =
             await this.googleDocsService.convertDocxBufferToPdf(bufferDocx);
         res.set({

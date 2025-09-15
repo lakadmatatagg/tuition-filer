@@ -9,6 +9,8 @@ import { DocxtempleterService } from './service/docxtempleter.service';
 import { GoogleDocsService } from './service/google-docs.service';
 import { TelegramService } from './service/telegram.service';
 import { SpringbootService } from './service/springboot.service';
+import { TelegramController } from './controller/telegram.controller';
+import { InvoiceService } from './service/invoice.service';
 
 const envImport = ConfigModule.forRoot({
     envFilePath: [
@@ -20,7 +22,12 @@ const envImport = ConfigModule.forRoot({
 
 @Module({
     imports: [envImport],
-    controllers: [AppController, BrowserController, GenerateController],
+    controllers: [
+        AppController,
+        BrowserController,
+        GenerateController,
+        TelegramController,
+    ],
     providers: [
         AppService,
         BrowserService,
@@ -28,6 +35,7 @@ const envImport = ConfigModule.forRoot({
         GoogleDocsService,
         TelegramService,
         SpringbootService,
+        InvoiceService,
     ],
 })
 export class AppModule {}
