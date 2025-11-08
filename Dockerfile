@@ -17,5 +17,5 @@ COPY --from=build /app/package*.json ./
 # Install only production dependencies
 RUN npm ci --omit=dev
 
-EXPOSE 3000
+EXPOSE 8080
 CMD ["node", "dist/main.js"]
