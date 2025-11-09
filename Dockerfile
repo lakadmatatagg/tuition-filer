@@ -32,4 +32,4 @@ ENV PORT 3000
 EXPOSE 3000
 
 # Start the NestJS app
-CMD ["node", "dist/main"]
+CMD ["npx", "dotenv", "-e", "environments/.env.prod", "--", "node", "dist/main"]
