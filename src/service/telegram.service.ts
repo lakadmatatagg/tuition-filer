@@ -34,17 +34,17 @@ export class TelegramService implements OnModuleInit {
 
     async onModuleInit() {
         if (this.isProd) {
-            const webhookUrl = this.configService.get<string>(
-                'TELEGRAM_WEBHOOK_URL',
-            );
-            if (!webhookUrl) {
-                this.logger.error('TELEGRAM_WEBHOOK_URL is not defined');
-                return;
-            }
-
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
-            await this.bot.setWebHook(`${webhookUrl}`);
-            this.logger.log(`Webhook set to ${webhookUrl}`);
+            // const webhookUrl = this.configService.get<string>(
+            //     'TELEGRAM_WEBHOOK_URL',
+            // );
+            // if (!webhookUrl) {
+            //     this.logger.error('TELEGRAM_WEBHOOK_URL is not defined');
+            //     return;
+            // }
+            //
+            // // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+            // await this.bot.setWebHook(`${webhookUrl}`);
+            // this.logger.log(`Webhook set to ${webhookUrl}`);
         } else {
             this.setupListeners();
             this.logger.log('Polling listeners set up (dev mode)');
