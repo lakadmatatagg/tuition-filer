@@ -23,6 +23,7 @@ WORKDIR /app
 # Copy built files and package.json
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/package*.json ./
+COPY --from=build /app/environments ./environments
 
 # Install only runtime dependencies
 RUN npm ci --omit=dev
