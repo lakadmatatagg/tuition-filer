@@ -4,17 +4,22 @@ import { JWT, GoogleAuth } from 'google-auth-library';
 import { Readable } from 'stream';
 import { randomUUID } from 'crypto';
 import * as path from 'path';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class GoogleDocsService {
     private auth: GoogleAuth;
+    private readonly isProd: boolean;
 
-    constructor() {
+    constructor(private readonly configService: ConfigService) {
+        this.isProd = this.configService.get<string>('PRODUCTION') === 'true';
         this.auth = new GoogleAuth({
-            keyFile: path.resolve(
-                __dirname,
-                '../../auth/tigasatutiga-439419-8f706d892fc7.json',
-            ),
+            keyFile: this.isProd
+                ? undefined
+                : path.resolve(
+                      __dirname,
+                      '../../auth/tigasatutiga-439419-8f706d892fc7.json',
+                  ),
             scopes: ['https://www.googleapis.com/auth/drive'],
         });
     }

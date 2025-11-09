@@ -42,14 +42,26 @@ export class DocxtempleterService {
         });
     }
 
-    async generateInvoice(data: any) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        const setting: SystemSettingInterface =
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    async generateInvoice(data: Record<string, any>): Promise<Buffer> {
+        const setting =
             await this.springbootService.getInvoiceFileName('invoice_template');
         if (!setting) {
             throw new Error('Invoice file name not found in system settings');
         }
+
+        // ✅ Dynamic require (works in CJS & avoids ESM import issues)
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        const expressionParser = require('docxtemplater/expressions.js');
+
+        // ✅ Configure parser safely
+        const parser = expressionParser.configure({
+            filters: {
+                upper: (input: string) => input?.toUpperCase() ?? '',
+                lower: (input: string) => input?.toLowerCase() ?? '',
+                currency: (value: number) =>
+                    typeof value === 'number' ? `RM ${value.toFixed(2)}` : '',
+            },
+        });
 
         const templateBuffer = await this.browserService.downloadFile(
             setting.value,
@@ -58,6 +70,7 @@ export class DocxtempleterService {
         const doc = new Docxtemplater(zip, {
             paragraphLoop: true,
             linebreaks: true,
+            parser,
         });
 
         doc.render(data);
