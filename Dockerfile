@@ -28,7 +28,7 @@ COPY --from=build /app/environments ./environments
 # Install only runtime dependencies
 RUN npm ci --omit=dev
 
-# Set environment variable for port
+# Set environment variable for port (if this port change, update at the cloud too)
 ENV PORT 3000
 EXPOSE 3000
 
