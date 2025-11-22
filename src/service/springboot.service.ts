@@ -34,7 +34,7 @@ export class SpringbootService {
         }
     }
 
-    async getParentByTelegram(chatId: string): Promise<ParentInterface> {
+    async getParentByTelegram(chatId: number): Promise<ParentInterface> {
         const url = `${this.springbootUrl}/parent/get-by-telegram/${encodeURIComponent(chatId)}`;
 
         try {
