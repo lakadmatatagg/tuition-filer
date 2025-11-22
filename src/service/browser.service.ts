@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Client } from 'basic-ftp';
 import { Writable } from 'stream';
+import { bufferToStream } from '../utils/buffer-to-stream.utils';
 
 @Injectable()
 export class BrowserService {
@@ -48,7 +49,7 @@ export class BrowserService {
     async showContents(): Promise<any> {
         const client = await this.getClient();
         try {
-            const list = await client.list('/');
+            const list = await client.list('/document_templates');
             return list.filter((item) => item.name !== '.ftpquota');
         } catch (e) {
             this.logger.log('Error listing contents: ');
@@ -61,7 +62,7 @@ export class BrowserService {
     async deleteFile(filePath: string): Promise<any> {
         const client = await this.getClient();
         try {
-            await client.remove(filePath);
+            await client.remove(`/document_templates/${filePath}`);
             return { message: `Deleted ${filePath}` };
         } finally {
             client.close();
@@ -86,18 +87,30 @@ export class BrowserService {
                 },
             });
 
-            await client.downloadTo(writable, remotePath);
+            await client.downloadTo(
+                writable,
+                `/document_templates/${remotePath}`,
+            );
             return Buffer.concat(chunks);
         } finally {
             client.close();
         }
     }
 
-    async uploadFile(localPath: string, remotePath: string): Promise<any> {
+    async uploadFile(
+        buffer: Buffer,
+        remotePath: string,
+        template: boolean,
+    ): Promise<any> {
         const client = await this.getClient();
         try {
-            await client.uploadFrom(localPath, remotePath);
-            return { message: `Uploaded ${localPath} to ${remotePath}` };
+            const stream = bufferToStream(buffer);
+
+            await client.uploadFrom(
+                stream,
+                `${template ? '/document_templates/' : '/working_documents/'}${remotePath}`,
+            );
+            return { message: `Uploaded to ${remotePath}` };
         } finally {
             client.close();
         }

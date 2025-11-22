@@ -95,7 +95,7 @@ export class TelegramService implements OnModuleInit {
         await this.handleMessage(chatId, text);
     }
 
-    private async handleMessage(chatId: string, text: string): Promise<void> {
+    private async handleMessage(chatId: number, text: string): Promise<void> {
         if (text === '/start') {
             const existingParent =
                 await this.springbootService.getParentByTelegram(chatId);
@@ -106,7 +106,7 @@ export class TelegramService implements OnModuleInit {
                     `Hi ${existingParent.name}, you are already registered. We’ll continue sending you updates here.`,
                 );
             } else {
-                this.pendingVerification.add(chatId);
+                this.pendingVerification.add(String(chatId));
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
                 await this.bot.sendMessage(
                     chatId,
@@ -122,19 +122,14 @@ export class TelegramService implements OnModuleInit {
                 chatId,
                 'Please wait... Generating invoice.',
             );
-            const attachment =
-                await this.invoiceService.getInvoiceCurrentMonth(chatId);
+            const attachment = await this.invoiceService.getInvoiceCurrentMonth(
+                String(chatId),
+            );
             if (attachment.buffer) {
-                const fileStream = Readable.from(attachment.buffer);
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-expect-error
-                fileStream.path = `${attachment.invoiceNo}.pdf`;
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
-                await this.bot.sendDocument(chatId, fileStream);
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
-                await this.bot.sendMessage(
+                await this.sendInvoiceToParent(
                     chatId,
-                    'Here is your invoice for this month. Thank you for your support!',
+                    attachment.buffer,
+                    attachment.invoiceNo,
                 );
             } else {
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
@@ -157,7 +152,7 @@ export class TelegramService implements OnModuleInit {
 
         if (/^(\+?60|0)1(1\d{7,8}|[02-9]\d{7,8})$/.test(text)) {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-            if (!this.pendingVerification.has(chatId)) {
+            if (!this.pendingVerification.has(String(chatId))) {
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
                 await this.bot.sendMessage(
                     chatId,
@@ -169,7 +164,6 @@ export class TelegramService implements OnModuleInit {
             const parent = await this.springbootService.getParentByPhone(text);
             if (parent) {
                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-expect-error
                 parent.telegramChatId = chatId;
                 await this.springbootService.saveParent(parent);
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
@@ -191,6 +185,23 @@ export class TelegramService implements OnModuleInit {
         await this.bot.sendMessage(
             chatId,
             'Unrecognized command or message. Type /help for available options.',
+        );
+    }
+
+    public async sendInvoiceToParent(
+        chatId: number,
+        buffer: Buffer,
+        invoiceNo: string,
+    ): Promise<void> {
+        const fileStream: any = Readable.from(buffer);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        fileStream.path = `${invoiceNo}.pdf`;
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+        await this.bot.sendDocument(chatId, fileStream);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+        await this.bot.sendMessage(
+            chatId,
+            'Here is your invoice for this month. Thank you for your support!',
         );
     }
 }

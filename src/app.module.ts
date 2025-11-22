@@ -11,6 +11,7 @@ import { TelegramService } from './service/telegram.service';
 import { SpringbootService } from './service/springboot.service';
 import { TelegramController } from './controller/telegram.controller';
 import { InvoiceService } from './service/invoice.service';
+import { EmailService } from './service/email.service';
 
 const envImport = ConfigModule.forRoot({
     envFilePath: [
@@ -36,6 +37,7 @@ const envImport = ConfigModule.forRoot({
         TelegramService,
         SpringbootService,
         InvoiceService,
+        EmailService,
     ],
 })
 export class AppModule {}

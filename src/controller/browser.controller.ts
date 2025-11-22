@@ -43,19 +43,19 @@ export class BrowserController {
         res.send(fileBuffer);
     }
 
-    @Post('upload')
-    @UseInterceptors(
-        FileInterceptor('file', {
-            storage: diskStorage({
-                destination: './uploads',
-                filename: (req, file, cb) => {
-                    cb(null, file.originalname); // 👈 keep original filename
-                },
-            }),
-        }),
-    )
-    async uploadFile(@UploadedFile() file: Express.Multer.File): Promise<any> {
-        const targetPath = path.join('', file.originalname); // 👈 import 'path' from 'path'
-        return this.browserService.uploadFile(file.path, targetPath);
-    }
+    // @Post('upload')
+    // @UseInterceptors(
+    //     FileInterceptor('file', {
+    //         storage: diskStorage({
+    //             destination: './uploads',
+    //             filename: (req, file, cb) => {
+    //                 cb(null, file.originalname); // 👈 keep original filename
+    //             },
+    //         }),
+    //     }),
+    // )
+    // async uploadFile(@UploadedFile() file: Express.Multer.File): Promise<any> {
+    //     const targetPath = path.join('', file.originalname); // 👈 import 'path' from 'path'
+    //     return this.browserService.uploadFile(file.path, targetPath, true);
+    // }
 }

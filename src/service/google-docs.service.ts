@@ -61,7 +61,7 @@ export class GoogleDocsService {
         );
 
         // 3. Delete the temporary DOCX from Drive
-        await drive.files.delete({ fileId });
+        // await drive.files.delete({ fileId });
 
         return Buffer.from(pdfRes.data as ArrayBuffer);
     }
