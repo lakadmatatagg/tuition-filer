@@ -1,11 +1,14 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
+import { SystemSettingInterface } from '../interface/system-setting.interface';
+import axios from 'axios';
 
 @Injectable()
 export class EmailService {
     private readonly logger = new Logger(EmailService.name);
     private transporter: nodemailer.Transporter;
+    private readonly springbootUrl: string;
 
     constructor(private readonly configService: ConfigService) {
         this.transporter = nodemailer.createTransport({
@@ -17,11 +20,15 @@ export class EmailService {
                 pass: this.configService.get<string>('SMTP_PASS'),
             },
         });
+
+        this.springbootUrl = this.configService.get<string>('BACKEND_URL')!;
+        if (!this.springbootUrl) {
+            this.logger.error('BACKEND_URL is not defined');
+        }
+        this.logger.log(`Loaded Springboot URL: ${this.springbootUrl}`);
     }
 
-    async sendBatchZip(zipBuffer: Buffer, zipName: string) {
-        const adminEmail = this.configService.get<string>('ADMIN_EMAIL');
-
+    async sendBatchZip(zipBuffer: Buffer, zipName: string, adminEmail: string) {
         const mailOptions = {
             from: this.configService.get<string>('SMTP_FROM'),
             to: adminEmail,
@@ -49,6 +56,18 @@ export class EmailService {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             this.logger.error('Failed to send batch ZIP', err.stack);
             throw err;
+        }
+    }
+
+    async getAdminEmail(key: string): Promise<SystemSettingInterface> {
+        const url = `${this.springbootUrl}/system-setting/by-key/${key}`;
+
+        try {
+            const response = await axios.get<SystemSettingInterface>(url);
+            return response.data;
+        } catch (error) {
+            this.logger.error(`Failed to fetch setting by key ${key}`, error);
+            throw error;
         }
     }
 }
