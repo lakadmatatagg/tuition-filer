@@ -13,7 +13,7 @@ export class GenerateController {
         private docxtempleterService: DocxtempleterService,
         private googleDocsService: GoogleDocsService,
         private telegramService: TelegramService,
-        private emailService: EmailService
+        private emailService: EmailService,
     ) {}
 
     @Get('download')
@@ -56,6 +56,9 @@ export class GenerateController {
 
     @Post('batch-invoice')
     async processBatchInvoice(@Body() data: InvoiceTemplate[]) {
+        const adminSetting =
+            await this.emailService.getAdminEmail('batch_admin_email');
+
         const batchEmail: Buffer[] = [];
         const batchInvoiceNos: string[] = [];
 
@@ -118,7 +121,11 @@ export class GenerateController {
         );
 
         // Send email to admin
-        await this.emailService.sendBatchZip(zipped, zipName);
+        await this.emailService.sendBatchZip(
+            zipped,
+            zipName,
+            adminSetting.value,
+        );
 
         return {
             success: true,

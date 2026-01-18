@@ -1,15 +1,19 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { google, drive_v3 } from 'googleapis';
 import { JWT, GoogleAuth } from 'google-auth-library';
 import { Readable } from 'stream';
 import { randomUUID } from 'crypto';
 import * as path from 'path';
 import { ConfigService } from '@nestjs/config';
+import axios from 'axios';
+import * as FormData from 'form-data';
 
 @Injectable()
 export class GoogleDocsService {
+    private readonly logger = new Logger(GoogleDocsService.name);
     private auth: GoogleAuth;
     private readonly isProd: boolean;
+    private readonly gotenbergUrl: string;
 
     constructor(private readonly configService: ConfigService) {
         this.isProd = this.configService.get<string>('PRODUCTION') === 'true';
@@ -22,6 +26,12 @@ export class GoogleDocsService {
                   ),
             scopes: ['https://www.googleapis.com/auth/drive'],
         });
+
+        this.gotenbergUrl = this.configService.get<string>('GOTENBURG_URL')!;
+        if (!this.gotenbergUrl) {
+            this.logger.error('GOTENBURG_URL is not defined');
+        }
+        this.logger.log(`Loaded Gotenburg URL: ${this.gotenbergUrl}`);
     }
 
     async convertDocxBufferToPdf(buffer: Buffer): Promise<Buffer> {
@@ -64,5 +74,27 @@ export class GoogleDocsService {
         // await drive.files.delete({ fileId });
 
         return Buffer.from(pdfRes.data as ArrayBuffer);
+    }
+
+    async docxToPdfBuffer(docxBuffer: Buffer) {
+        const form = new FormData();
+
+        form.append('files', docxBuffer, {
+            filename: 'input.docx',
+            contentType:
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        });
+
+        const res = await axios.post(
+            this.gotenbergUrl + '/forms/libreoffice/convert',
+            form,
+            {
+                headers: form.getHeaders(),
+                responseType: 'arraybuffer', // 🔑 IMPORTANT
+                timeout: 120000,
+            },
+        );
+
+        return Buffer.from(res.data);
     }
 }
